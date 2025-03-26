@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guhai.smartbuilding.mapper.DeviceMapper">
+    <select id="getDeviceStatus" resultType="com.guhai.smartbuilding.entity.DeviceStatus">
+        SELECT 
+            warning_light as warningLight,
+            fill_light as fillLight,
+            exhaust_fan as exhaustFan,
+            alarm as alarm,
+            emergency_door as emergencyDoor,
+            dht11_status as dht11Status,
+            light_sensor_status as lightSensorStatus
+        FROM device_status 
+        ORDER BY id DESC 
+        LIMIT 1
+    </select>
+
+    <select id="getDeviceControlRecords" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        SELECT 
+            id,
+            user_id as userId,
+            device_type as deviceType,
+            control_action as controlAction,
+            create_time as createTime
+        FROM device_control_record
+        WHERE device_type = #{deviceType}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getLatestDeviceControl" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        SELECT 
+            id,
+            user_id as userId,
+            device_type as deviceType,
+            control_action as controlAction,
+            create_time as createTime
+        FROM device_control_record
+        WHERE device_type = #{deviceType}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertDeviceControlRecord" parameterType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        INSERT INTO device_control_record (
+            user_id,
+            device_type,
+            control_action
+        ) VALUES (
+            #{userId},
+            #{deviceType},
+            #{controlAction}
+        )
+    </insert>
+</mapper> 

@@ -1,0 +1,47 @@
+#配置SpringBoot的相关信息
+spring:
+    application:
+        name: smart-building
+
+    #  配置数据库连接信息
+    datasource:
+        url: jdbc:mysql://localhost:3306/smart_building?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: 123
+    servlet:
+        multipart:
+            # 设置单个文件最大上传的大小
+            max-file-size: 10MB
+            # 设置最大请求大小 （包括上传的所有文件和表单数据）
+            max-request-size: 100MB
+
+#配置Mybatis的相关信息
+mybatis:
+    configuration:
+        #    配置日志输出
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        #    开启驼峰命名自动映射，记关键词camel即可，要求命名规则是数据库中表的字段名是xxx_abc ==> 实体类中的属性名是xxxAbc
+        map-underscore-to-camel-case: true
+    type-aliases-package: com.guhai.smartbuilding.entity
+#  指定Mapper映射文件的路径
+    mapper-locations: classpath:mapper/*.xml
+
+#配置事务管理日志级别
+logging:
+    level:
+        org.springframework.jdbc.support.JdbcTransactionManager: debug
+
+# 配置阿里云OSS的配置信息
+#aliyun:
+#  oss:
+#    endpoint: https://oss-cn-beijing.aliyuncs.com
+#    bucketName: java-ai-guhai
+#    region: cn-beijing
+
+server:
+  port: 8080
+
+jwt:
+  secret: your-secret-key-here
+  expiration: 86400000  # 24小时
