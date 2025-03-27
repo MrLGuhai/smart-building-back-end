@@ -1,5 +1,6 @@
 package com.guhai.smartbuilding.service.impl;
 
+import com.guhai.smartbuilding.entity.LoginResponse;
 import com.guhai.smartbuilding.entity.User;
 import com.guhai.smartbuilding.mapper.UserMapper;
 import com.guhai.smartbuilding.service.AuthService;
@@ -18,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
     private UserMapper userMapper;
 
     @Override
-    public boolean login(String username, String password) {
+    public LoginResponse login(String username, String password) {
         User user = userMapper.selectByUsernameAndPassword(username, password);
         if (user != null) {
             log.info("登录成功，用户信息: {}", user);
@@ -27,10 +28,15 @@ public class AuthServiceImpl implements AuthService {
             claims.put("id", user.getId());
             claims.put("username", user.getUsername());
             String jwt = JwtUtils.generateJwt(claims);
-            user.setToken(jwt);
-            return true;
+            
+            // 构建登录响应
+            LoginResponse response = new LoginResponse();
+            response.setId(user.getId());
+            response.setUsername(user.getUsername());
+            response.setToken(jwt);
+            return response;
         }
-        return false;
+        return null;
     }
 
     @Override
