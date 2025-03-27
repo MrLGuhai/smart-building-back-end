@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.DeviceMapper">
+    <!-- 获取设备状态 -->
     <select id="getDeviceStatus" resultType="com.guhai.smartbuilding.entity.DeviceStatus">
         SELECT 
+            id,
             warning_light as warningLight,
             fill_light as fillLight,
             exhaust_fan as exhaustFan,
             alarm as alarm,
             emergency_door as emergencyDoor,
             dht11_status as dht11Status,
-            light_sensor_status as lightSensorStatus
+            light_sensor_status as lightSensorStatus,
+            create_time as createTime
         FROM device_status 
         ORDER BY id DESC 
         LIMIT 1
     </select>
 
+    <!-- 获取设备控制记录 -->
     <select id="getDeviceControlRecords" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
         SELECT 
             id,
@@ -22,11 +26,12 @@
             device_type as deviceType,
             control_action as controlAction,
             create_time as createTime
-        FROM device_control_record
+        FROM device_control_record 
         WHERE device_type = #{deviceType}
         ORDER BY create_time DESC
     </select>
 
+    <!-- 获取最新设备控制记录 -->
     <select id="getLatestDeviceControl" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
         SELECT 
             id,
@@ -34,21 +39,24 @@
             device_type as deviceType,
             control_action as controlAction,
             create_time as createTime
-        FROM device_control_record
+        FROM device_control_record 
         WHERE device_type = #{deviceType}
-        ORDER BY create_time DESC
+        ORDER BY create_time DESC 
         LIMIT 1
     </select>
 
+    <!-- 插入设备控制记录 -->
     <insert id="insertDeviceControlRecord" parameterType="com.guhai.smartbuilding.entity.DeviceControlRecord">
         INSERT INTO device_control_record (
             user_id,
             device_type,
-            control_action
+            control_action,
+            create_time
         ) VALUES (
             #{userId},
             #{deviceType},
-            #{controlAction}
+            #{controlAction},
+            NOW()
         )
     </insert>
 </mapper> 

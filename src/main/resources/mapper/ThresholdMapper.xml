@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.ThresholdMapper">
-    <!-- 获取阈值设置 -->
+    <!-- 获取当前阈值设置 -->
     <select id="getCurrentThresholds" resultType="com.guhai.smartbuilding.entity.Thresholds">
-        SELECT * FROM thresholds ORDER BY id DESC LIMIT 1
+        SELECT 
+            id,
+            user_id as userId,
+            temperature,
+            humidity,
+            light_upper as lightUpper,
+            light_lower as lightLower,
+            create_time as createTime
+        FROM thresholds 
+        ORDER BY id DESC 
+        LIMIT 1
     </select>
 
     <!-- 更新阈值设置 -->
     <insert id="updateThresholds" parameterType="com.guhai.smartbuilding.entity.Thresholds">
         INSERT INTO thresholds (
-            temperature_min, temperature_max,
-            humidity_min, humidity_max,
-            light_min, light_max,
-            co2_min, co2_max,
+            user_id,
+            temperature,
+            humidity,
+            light_upper,
+            light_lower,
             create_time
         ) VALUES (
-            #{temperatureMin}, #{temperatureMax},
-            #{humidityMin}, #{humidityMax},
-            #{lightMin}, #{lightMax},
-            #{co2Min}, #{co2Max},
+            #{userId},
+            #{temperature},
+            #{humidity},
+            #{lightUpper},
+            #{lightLower},
             NOW()
         )
     </insert>

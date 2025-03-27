@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS environment (
     id INT PRIMARY KEY AUTO_INCREMENT,
     temperature INT NOT NULL,
     humidity INT NOT NULL,
-    light_intensity INT NOT NULL,
+    light INT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS device_status (
     exhaust_fan BOOLEAN DEFAULT FALSE,
     alarm BOOLEAN DEFAULT FALSE,
     emergency_door BOOLEAN DEFAULT FALSE,
-    dht11_status VARCHAR(20) DEFAULT 'normal',
-    light_sensor_status VARCHAR(20) DEFAULT 'normal',
+    dht11_status BOOLEAN DEFAULT TRUE,
+    light_sensor_status BOOLEAN DEFAULT TRUE,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -43,13 +43,12 @@ CREATE TABLE IF NOT EXISTS device_control_record (
 -- 阈值设置表
 CREATE TABLE IF NOT EXISTS thresholds (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL COMMENT '设置用户ID',
+    user_id INT NOT NULL,
     temperature INT NOT NULL,
     humidity INT NOT NULL,
     light_upper INT NOT NULL,
     light_lower INT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 告警记录表

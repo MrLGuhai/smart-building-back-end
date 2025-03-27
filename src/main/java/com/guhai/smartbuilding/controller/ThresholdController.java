@@ -20,7 +20,9 @@ public class ThresholdController {
 
     @PostMapping("/update")
     public ApiResponse updateThresholds(@RequestBody Thresholds thresholds) {
-        thresholdService.updateThresholds(thresholds);
-        return ApiResponse.success("更新成功", null);
+        if (thresholdService.updateThresholds(thresholds)) {
+            return ApiResponse.success("更新成功", null);
+        }
+        return ApiResponse.error(500, "更新失败");
     }
 } 
