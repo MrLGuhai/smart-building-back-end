@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.UserMapper">
-    <select id="login" resultType="com.guhai.smartbuilding.entity.User">
+    <select id="selectByUsernameAndPassword" resultType="com.guhai.smartbuilding.entity.User">
         SELECT * FROM user WHERE username = #{username} AND password = #{password}
     </select>
 
-    <select id="findByUsername" resultType="com.guhai.smartbuilding.entity.User">
+    <select id="selectByUsername" resultType="com.guhai.smartbuilding.entity.User">
         SELECT * FROM user WHERE username = #{username}
     </select>
 
-    <insert id="register">
-        INSERT INTO user (username, password) VALUES (#{username}, #{password})
+    <insert id="insert" parameterType="com.guhai.smartbuilding.entity.User">
+        INSERT INTO user (username, password)
+        VALUES (#{username}, #{password})
     </insert>
 </mapper> 

@@ -3,9 +3,12 @@ package com.guhai.smartbuilding.controller;
 import com.guhai.smartbuilding.common.ApiResponse;
 import com.guhai.smartbuilding.entity.User;
 import com.guhai.smartbuilding.service.AuthService;
-import com.guhai.smartbuilding.util.JwtUtil;
+import com.guhai.smartbuilding.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -13,13 +16,12 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
     @PostMapping("/login")
     public ApiResponse login(@RequestBody User user) {
         if (authService.login(user.getUsername(), user.getPassword())) {
-            String token = jwtUtil.generateToken(user.getUsername());
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", user.getUsername());
+            String token = JwtUtils.generateJwt(claims);
             user.setToken(token);
             return ApiResponse.success("登录成功", user);
         }
