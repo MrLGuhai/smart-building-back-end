@@ -17,7 +17,7 @@
     </select>
 
     <!-- 更新阈值设置 -->
-    <insert id="updateThresholds" parameterType="com.guhai.smartbuilding.entity.Thresholds">
+    <insert id="updateThresholds" parameterType="com.guhai.smartbuilding.entity.Thresholds" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO thresholds (
             user_id,
             temperature,

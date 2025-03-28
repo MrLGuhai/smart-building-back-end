@@ -5,7 +5,7 @@ use smart_building;
 CREATE TABLE IF NOT EXISTS user (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS device_status (
 );
 
 -- 设备控制记录表
-CREATE TABLE IF NOT EXISTS device_control_record (
+CREATE TABLE IF NOT EXISTS device_control_records (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '操作用户ID',
     device_type INT NOT NULL COMMENT '设备类型：1-警示灯，2-补光灯，3-排气扇，4-警报器，5-应急逃生门',
@@ -48,6 +48,16 @@ CREATE TABLE IF NOT EXISTS thresholds (
     humidity INT NOT NULL,
     light_upper INT NOT NULL,
     light_lower INT NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 阈值修改记录表
+CREATE TABLE IF NOT EXISTS threshold_records (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL COMMENT '操作用户ID',
+    threshold_id INT NOT NULL COMMENT '关联的阈值设置ID',
+    threshold_type INT NOT NULL COMMENT '1:温度 2:湿度 3:光照上限 4:光照下限',
+    new_value INT NOT NULL COMMENT '新的阈值',
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

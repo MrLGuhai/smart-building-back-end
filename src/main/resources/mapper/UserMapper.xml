@@ -19,6 +19,15 @@
         WHERE username = #{username}
     </select>
 
+    <select id="selectById" resultType="com.guhai.smartbuilding.entity.User">
+        SELECT 
+            id,
+            username,
+            password
+        FROM user 
+        WHERE id = #{id}
+    </select>
+
     <insert id="insert" parameterType="com.guhai.smartbuilding.entity.User">
         INSERT INTO user (username, password)
         VALUES (#{username}, #{password})
