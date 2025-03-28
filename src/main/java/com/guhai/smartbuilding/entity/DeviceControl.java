@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeviceControl {
+    private Integer userId;
     private Boolean warningLight;
     private Boolean fillLight;
     private Boolean exhaustFan;

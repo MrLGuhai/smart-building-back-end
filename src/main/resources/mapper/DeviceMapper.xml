@@ -45,18 +45,66 @@
         LIMIT 1
     </select>
 
-    <!-- 插入设备控制记录 -->
-    <insert id="insertDeviceControlRecord" parameterType="com.guhai.smartbuilding.entity.DeviceControlRecord">
-        INSERT INTO device_control_record (
-            user_id,
-            device_type,
-            control_action,
-            create_time
+    <!-- 更新设备状态 -->
+    <insert id="updateDeviceStatus" parameterType="com.guhai.smartbuilding.entity.DeviceStatus" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO device_status (
+            warning_light,
+            fill_light,
+            exhaust_fan,
+            alarm,
+            emergency_door,
+            dht11_status,
+            light_sensor_status
         ) VALUES (
-            #{userId},
-            #{deviceType},
-            #{controlAction},
-            NOW()
+            #{warningLight},
+            #{fillLight},
+            #{exhaustFan},
+            #{alarm},
+            #{emergencyDoor},
+            #{dht11Status},
+            #{lightSensorStatus}
         )
     </insert>
+
+    <!-- 插入控制记录 -->
+    <insert id="insertControlRecord" parameterType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        INSERT INTO device_control_record (
+            user_id,
+            device_status_id,
+            device_type,
+            control_action
+        ) VALUES (
+            #{userId},
+            #{deviceStatusId},
+            #{deviceType},
+            #{controlAction}
+        )
+    </insert>
+
+    <!-- 查询控制记录 -->
+    <select id="getControlRecords" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        SELECT 
+            id,
+            user_id as userId,
+            device_status_id as deviceStatusId,
+            device_type as deviceType,
+            control_action as controlAction,
+            create_time as createTime
+        FROM device_control_record
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据设备类型查询控制记录 -->
+    <select id="getControlRecordsByType" resultType="com.guhai.smartbuilding.entity.DeviceControlRecord">
+        SELECT 
+            id,
+            user_id as userId,
+            device_status_id as deviceStatusId,
+            device_type as deviceType,
+            control_action as controlAction,
+            create_time as createTime
+        FROM device_control_record
+        WHERE device_type = #{deviceType}
+        ORDER BY create_time DESC
+    </select>
 </mapper> 

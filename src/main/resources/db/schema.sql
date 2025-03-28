@@ -21,20 +21,21 @@ CREATE TABLE IF NOT EXISTS environment (
 -- 设备状态表
 CREATE TABLE IF NOT EXISTS device_status (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    warning_light BOOLEAN DEFAULT FALSE,
-    fill_light BOOLEAN DEFAULT FALSE,
-    exhaust_fan BOOLEAN DEFAULT FALSE,
-    alarm BOOLEAN DEFAULT FALSE,
-    emergency_door BOOLEAN DEFAULT FALSE,
-    dht11_status BOOLEAN DEFAULT TRUE,
-    light_sensor_status BOOLEAN DEFAULT TRUE,
+    warning_light BOOLEAN NOT NULL ,
+    fill_light BOOLEAN NOT NULL ,
+    exhaust_fan BOOLEAN NOT NULL ,
+    alarm BOOLEAN NOT NULL ,
+    emergency_door BOOLEAN NOT NULL ,
+    dht11_status BOOLEAN NOT NULL ,
+    light_sensor_status BOOLEAN NOT NULL ,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 设备控制记录表
-CREATE TABLE IF NOT EXISTS device_control_records (
+CREATE TABLE IF NOT EXISTS device_control_record (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '操作用户ID',
+    device_status_id INT NOT NULL COMMENT '关联的设备状态ID',
     device_type INT NOT NULL COMMENT '设备类型：1-警示灯，2-补光灯，3-排气扇，4-警报器，5-应急逃生门',
     control_action BOOLEAN NOT NULL COMMENT '控制动作：true-开启，false-关闭',
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -12,6 +12,7 @@ import java.util.Date;
 public class DeviceControlRecord {
     private Integer id;
     private Integer userId;
+    private Integer deviceStatusId;
     private Integer deviceType;
     private Boolean controlAction;
     private Date createTime;
