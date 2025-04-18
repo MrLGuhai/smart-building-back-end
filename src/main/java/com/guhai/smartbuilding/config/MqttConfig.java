@@ -12,10 +12,24 @@ public class MqttConfig {
     private String clientId;
     private String username;
     private String password;
-    private String[] topics;
-    private int qos = 1;
-    private int connectionTimeout = 30;
-    private int keepAliveInterval = 60;
-    private boolean cleanSession = true;
-    private boolean automaticReconnect = true;
+    private int connectionTimeout;
+    private int keepAliveInterval;
+    private boolean cleanSession;
+    private boolean automaticReconnect;
+    private int qos;
+    
+    // 主题配置
+    private Topics topics;
+    
+    @Data
+    public static class Topics {
+        private String syncRequest;
+        private String syncResponse;
+        private String sensorData;
+        private String deviceStatus;
+        private String deviceControl;
+        private String deviceControlResponse;
+        private String thresholdSet;
+        private String thresholdSetResponse;
+    }
 } 

@@ -1,18 +1,24 @@
 package com.guhai.smartbuilding.service.impl;
 
-import com.guhai.smartbuilding.entity.DeviceControl;
+import com.guhai.smartbuilding.entity.Device;
 import com.guhai.smartbuilding.entity.DeviceControlRecord;
-import com.guhai.smartbuilding.entity.DeviceStatus;
 import com.guhai.smartbuilding.entity.User;
+import com.guhai.smartbuilding.enums.DeviceType;
 import com.guhai.smartbuilding.mapper.DeviceMapper;
 import com.guhai.smartbuilding.mapper.UserMapper;
 import com.guhai.smartbuilding.service.DeviceService;
+import com.guhai.smartbuilding.service.MqttService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class DeviceServiceImpl implements DeviceService {
     @Autowired
@@ -20,76 +26,40 @@ public class DeviceServiceImpl implements DeviceService {
     
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private MqttService mqttService;
 
     @Override
-    public DeviceStatus getDeviceStatus() {
+    public Device getDeviceStatus() {
+        return deviceMapper.getDeviceStatus();
+    }
+
+    @Override
+    public Device getAllDevicesControlStatus() {
         return deviceMapper.getDeviceStatus();
     }
 
     @Override
     @Transactional
-    public boolean updateDeviceStatus(DeviceStatus deviceStatus) {
-        // 获取当前设备状态
-        DeviceStatus currentStatus = deviceMapper.getDeviceStatus();
-        
-        // 合并设备状态
-        DeviceStatus mergedStatus = new DeviceStatus();
-        mergedStatus.setWarningLight(deviceStatus.getWarningLight() != null ? 
-            deviceStatus.getWarningLight() : currentStatus.getWarningLight());
-        mergedStatus.setFillLight(deviceStatus.getFillLight() != null ? 
-            deviceStatus.getFillLight() : currentStatus.getFillLight());
-        mergedStatus.setExhaustFan(deviceStatus.getExhaustFan() != null ? 
-            deviceStatus.getExhaustFan() : currentStatus.getExhaustFan());
-        mergedStatus.setAlarm(deviceStatus.getAlarm() != null ? 
-            deviceStatus.getAlarm() : currentStatus.getAlarm());
-        mergedStatus.setEmergencyDoor(deviceStatus.getEmergencyDoor() != null ? 
-            deviceStatus.getEmergencyDoor() : currentStatus.getEmergencyDoor());
-        mergedStatus.setDht11Status(deviceStatus.getDht11Status() != null ? 
-            deviceStatus.getDht11Status() : currentStatus.getDht11Status());
-        mergedStatus.setLightSensorStatus(deviceStatus.getLightSensorStatus() != null ? 
-            deviceStatus.getLightSensorStatus() : currentStatus.getLightSensorStatus());
-        
-        // 插入新的设备状态
-        int result = deviceMapper.updateDeviceStatus(mergedStatus);
-        return result > 0;
-    }
-
-    @Override
-    public DeviceControl getAllDevicesControlStatus() {
-        DeviceControl control = new DeviceControl();
-        DeviceStatus status = deviceMapper.getDeviceStatus();
-        
-        if (status != null) {
-            control.setWarningLight(status.getWarningLight());
-            control.setFillLight(status.getFillLight());
-            control.setExhaustFan(status.getExhaustFan());
-            control.setAlarm(status.getAlarm());
-            control.setEmergencyDoor(status.getEmergencyDoor());
-        }
-        
-        return control;
-    }
-
-    @Override
-    @Transactional
-    public boolean updateDeviceControl(DeviceControl control) {
+    public boolean updateDeviceControl(Device device) {
         // 验证用户是否存在
-        if (control.getUserId() == null) {
+        if (device.getUserId() == null) {
             return false;
         }
-        User user = userMapper.selectById(control.getUserId());
+        User user = userMapper.selectById(device.getUserId());
         if (user == null) {
             return false;
         }
         
         // 获取当前设备状态
-        DeviceStatus currentStatus = deviceMapper.getDeviceStatus();
+        Device currentStatus = deviceMapper.getDeviceStatus();
         if (currentStatus == null) {
             return false;
         }
         
         // 创建新的设备状态
-        DeviceStatus newStatus = new DeviceStatus();
+        Device newStatus = new Device();
         newStatus.setWarningLight(currentStatus.getWarningLight());
         newStatus.setFillLight(currentStatus.getFillLight());
         newStatus.setExhaustFan(currentStatus.getExhaustFan());
@@ -99,75 +69,97 @@ public class DeviceServiceImpl implements DeviceService {
         newStatus.setLightSensorStatus(currentStatus.getLightSensorStatus());
         
         // 更新设备状态
-        if (control.getWarningLight() != null) {
-            newStatus.setWarningLight(control.getWarningLight());
+        if (device.getWarningLight() != null) {
+            newStatus.setWarningLight(device.getWarningLight());
         }
-        if (control.getFillLight() != null) {
-            newStatus.setFillLight(control.getFillLight());
+        if (device.getFillLight() != null) {
+            newStatus.setFillLight(device.getFillLight());
         }
-        if (control.getExhaustFan() != null) {
-            newStatus.setExhaustFan(control.getExhaustFan());
+        if (device.getExhaustFan() != null) {
+            newStatus.setExhaustFan(device.getExhaustFan());
         }
-        if (control.getAlarm() != null) {
-            newStatus.setAlarm(control.getAlarm());
+        if (device.getAlarm() != null) {
+            newStatus.setAlarm(device.getAlarm());
         }
-        if (control.getEmergencyDoor() != null) {
-            newStatus.setEmergencyDoor(control.getEmergencyDoor());
+        if (device.getEmergencyDoor() != null) {
+            newStatus.setEmergencyDoor(device.getEmergencyDoor());
         }
         
-        // 插入新的设备状态
-        int result = deviceMapper.updateDeviceStatus(newStatus);
-        if (result <= 0) {
+        // 创建回调Future
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        
+        // 将控制命令转发到单片机
+        String commandId = mqttService.publishDeviceControl(device);
+        if (commandId == null) {
             return false;
         }
         
-        // 记录控制操作
-        if (control.getWarningLight() != null) {
-            DeviceControlRecord record = new DeviceControlRecord();
-            record.setUserId(control.getUserId());
-            record.setDeviceStatusId(newStatus.getId());
-            record.setDeviceType(1);
-            record.setControlAction(control.getWarningLight());
-            deviceMapper.insertControlRecord(record);
-        }
+        // 添加回调
+        mqttService.addCommandCallback(commandId, future);
         
-        if (control.getFillLight() != null) {
-            DeviceControlRecord record = new DeviceControlRecord();
-            record.setUserId(control.getUserId());
-            record.setDeviceStatusId(newStatus.getId());
-            record.setDeviceType(2);
-            record.setControlAction(control.getFillLight());
-            deviceMapper.insertControlRecord(record);
+        try {
+            // 等待单片机响应，最多等待5秒
+            Boolean success = future.get(5, TimeUnit.SECONDS);
+            
+            if (success) {
+                // 如果控制成功，更新数据库中的设备状态
+                deviceMapper.updateDeviceStatus(newStatus);
+                
+                // 记录控制操作
+                if (device.getWarningLight() != null) {
+                    DeviceControlRecord record = new DeviceControlRecord();
+                    record.setUserId(device.getUserId());
+                    record.setDeviceStatusId(newStatus.getId());
+                    record.setDeviceType(DeviceType.WARNING_LIGHT.getCode());
+                    record.setControlAction(device.getWarningLight());
+                    deviceMapper.insertControlRecord(record);
+                }
+                
+                if (device.getFillLight() != null) {
+                    DeviceControlRecord record = new DeviceControlRecord();
+                    record.setUserId(device.getUserId());
+                    record.setDeviceStatusId(newStatus.getId());
+                    record.setDeviceType(DeviceType.FILL_LIGHT.getCode());
+                    record.setControlAction(device.getFillLight());
+                    deviceMapper.insertControlRecord(record);
+                }
+                
+                if (device.getExhaustFan() != null) {
+                    DeviceControlRecord record = new DeviceControlRecord();
+                    record.setUserId(device.getUserId());
+                    record.setDeviceStatusId(newStatus.getId());
+                    record.setDeviceType(DeviceType.EXHAUST_FAN.getCode());
+                    record.setControlAction(device.getExhaustFan());
+                    deviceMapper.insertControlRecord(record);
+                }
+                
+                if (device.getAlarm() != null) {
+                    DeviceControlRecord record = new DeviceControlRecord();
+                    record.setUserId(device.getUserId());
+                    record.setDeviceStatusId(newStatus.getId());
+                    record.setDeviceType(DeviceType.ALARM.getCode());
+                    record.setControlAction(device.getAlarm());
+                    deviceMapper.insertControlRecord(record);
+                }
+                
+                if (device.getEmergencyDoor() != null) {
+                    DeviceControlRecord record = new DeviceControlRecord();
+                    record.setUserId(device.getUserId());
+                    record.setDeviceStatusId(newStatus.getId());
+                    record.setDeviceType(DeviceType.EMERGENCY_DOOR.getCode());
+                    record.setControlAction(device.getEmergencyDoor());
+                    deviceMapper.insertControlRecord(record);
+                }
+            }
+            
+            return success;
+        } catch (Exception e) {
+            log.error("等待单片机响应超时或发生异常", e);
+            return false;
+        } finally {
+            // 移除回调
+            mqttService.removeCommandCallback(commandId);
         }
-        
-        if (control.getExhaustFan() != null) {
-            DeviceControlRecord record = new DeviceControlRecord();
-            record.setUserId(control.getUserId());
-            record.setDeviceStatusId(newStatus.getId());
-            record.setDeviceType(3);
-            record.setControlAction(control.getExhaustFan());
-            deviceMapper.insertControlRecord(record);
-        }
-        
-        if (control.getAlarm() != null) {
-            DeviceControlRecord record = new DeviceControlRecord();
-            record.setUserId(control.getUserId());
-            record.setDeviceStatusId(newStatus.getId());
-            record.setDeviceType(4);
-            record.setControlAction(control.getAlarm());
-            deviceMapper.insertControlRecord(record);
-        }
-        
-        if (control.getEmergencyDoor() != null) {
-            DeviceControlRecord record = new DeviceControlRecord();
-            record.setUserId(control.getUserId());
-            record.setDeviceStatusId(newStatus.getId());
-            record.setDeviceType(5);
-            record.setControlAction(control.getEmergencyDoor());
-            deviceMapper.insertControlRecord(record);
-        }
-        
-        return true;
     }
 
     @Override
@@ -188,5 +180,79 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public DeviceControlRecord getLatestDeviceControl(Integer deviceType) {
         return deviceMapper.getLatestDeviceControl(deviceType);
+    }
+    
+    @Override
+    @Transactional
+    public void handleDeviceControlResponse(Device device, boolean success) {
+        if (success) {
+            // 如果控制成功,更新数据库中的设备状态
+            int result = deviceMapper.updateDeviceStatus(device);
+            if (result <= 0) {
+                log.error("设备控制成功但数据库更新失败: device={}", device);
+            }
+        } else {
+            // 如果控制失败,记录错误日志
+            log.error("设备控制失败: device={}", device);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void handleDeviceAutoControl(Device device) {
+        // 获取当前设备状态
+        Device currentStatus = deviceMapper.getDeviceStatus();
+        if (currentStatus == null) {
+            throw new RuntimeException("设备状态不存在");
+        }
+
+        // 更新设备状态
+        deviceMapper.updateDeviceStatus(device);
+
+        // 比较设备状态变化并记录
+        if (currentStatus.getWarningLight() != device.getWarningLight()) {
+            DeviceControlRecord record = new DeviceControlRecord();
+            record.setUserId(1); // 系统自动控制
+            record.setDeviceStatusId(currentStatus.getId());
+            record.setDeviceType(DeviceType.WARNING_LIGHT.getCode());
+            record.setControlAction(device.getWarningLight());
+            deviceMapper.insertControlRecord(record);
+        }
+
+        if (currentStatus.getFillLight() != device.getFillLight()) {
+            DeviceControlRecord record = new DeviceControlRecord();
+            record.setUserId(1); // 系统自动控制
+            record.setDeviceStatusId(currentStatus.getId());
+            record.setDeviceType(DeviceType.FILL_LIGHT.getCode());
+            record.setControlAction(device.getFillLight());
+            deviceMapper.insertControlRecord(record);
+        }
+
+        if (currentStatus.getExhaustFan() != device.getExhaustFan()) {
+            DeviceControlRecord record = new DeviceControlRecord();
+            record.setUserId(1); // 系统自动控制
+            record.setDeviceStatusId(currentStatus.getId());
+            record.setDeviceType(DeviceType.EXHAUST_FAN.getCode());
+            record.setControlAction(device.getExhaustFan());
+            deviceMapper.insertControlRecord(record);
+        }
+
+        if (currentStatus.getAlarm() != device.getAlarm()) {
+            DeviceControlRecord record = new DeviceControlRecord();
+            record.setUserId(1); // 系统自动控制
+            record.setDeviceStatusId(currentStatus.getId());
+            record.setDeviceType(DeviceType.ALARM.getCode());
+            record.setControlAction(device.getAlarm());
+            deviceMapper.insertControlRecord(record);
+        }
+
+        if (currentStatus.getEmergencyDoor() != device.getEmergencyDoor()) {
+            DeviceControlRecord record = new DeviceControlRecord();
+            record.setUserId(1); // 系统自动控制
+            record.setDeviceStatusId(currentStatus.getId());
+            record.setDeviceType(DeviceType.EMERGENCY_DOOR.getCode());
+            record.setControlAction(device.getEmergencyDoor());
+            deviceMapper.insertControlRecord(record);
+        }
     }
 } 

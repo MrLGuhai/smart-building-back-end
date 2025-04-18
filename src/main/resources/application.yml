@@ -20,7 +20,7 @@ spring:
 mybatis:
     configuration:
         #    配置日志输出
-        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
         #    开启驼峰命名自动映射，记关键词camel即可，要求命名规则是数据库中表的字段名是xxx_abc ==> 实体类中的属性名是xxxAbc
         map-underscore-to-camel-case: true
     type-aliases-package: com.guhai.smartbuilding.entity
@@ -30,7 +30,7 @@ mybatis:
 #配置事务管理日志级别
 logging:
     level:
-        org.springframework.jdbc.support.JdbcTransactionManager: debug
+        org.springframework.jdbc.support.JdbcTransactionManager: info
 
 # 配置阿里云OSS的配置信息
 #aliyun:
@@ -47,16 +47,21 @@ jwt:
   expiration: 86400000  # 24小时
 
 mqtt:
-  broker: tcp://192.168.20.226:1883
+  broker: tcp://192.168.170.226:1883
   client-id: smart-building-${random.value}
-  username: your_username
-  password: your_password
-  topics:
-    - device/status
-    - device/control
-    - sensor/data
-  qos: 1
+  username: admin
+  password: admin
   connection-timeout: 30
   keep-alive-interval: 60
   clean-session: true
   automatic-reconnect: true
+  qos: 1
+  topics:
+    sync-request: sync/request
+    sync-response: sync/response
+    sensor-data: sensor/data
+    device-status: device/status
+    device-control: device/control
+    device-control-response: device/control/response
+    threshold-set: threshold/set
+    threshold-set-response: threshold/set/response

@@ -146,28 +146,9 @@ http://localhost:8080
 }
 ```
 
-### 2. 获取设备控制状态
+### 2. 更新设备控制
 - **接口URL**: `/device/control`
-- **请求方式**: GET
-- **请求参数**: 无
-- **成功响应**:
-```json
-{
-    "code": 200,
-    "message": "获取成功",
-    "data": {
-        "warningLight": false,
-        "fillLight": false,
-        "exhaustFan": false,
-        "alarm": false,
-        "emergencyDoor": false
-    }
-}
-```
-
-### 3. 更新设备控制
-- **接口URL**: `/device/control`
-- **请求方式**: POST
+- **请求方式**: PUT
 - **请求参数**:
 ```json
 {
@@ -182,13 +163,49 @@ http://localhost:8080
 ```json
 {
     "code": 200,
-    "message": "更新成功",
+    "message": "设备控制成功",
+    "data": {
+        "warningLight": false,
+        "fillLight": false,
+        "exhaustFan": false,
+        "alarm": false,
+        "emergencyDoor": false
+    }
+}
+```
+- **失败响应**:
+```json
+{
+    "code": 500,
+    "message": "设备控制失败",
     "data": null
 }
 ```
 
-### 4. 获取设备控制记录
+### 3. 获取设备控制记录
 - **接口URL**: `/device/control/records`
+- **请求方式**: GET
+- **请求参数**: 无
+- **成功响应**:
+```json
+{
+    "code": 200,
+    "message": "获取成功",
+    "data": [
+        {
+            "id": 1,
+            "userId": 1,
+            "deviceStatusId": 1,
+            "deviceType": 1,
+            "controlAction": true,
+            "createTime": "2024-03-21T10:00:00"
+        }
+    ]
+}
+```
+
+### 4. 根据设备类型获取控制记录
+- **接口URL**: `/device/control/records/{deviceType}`
 - **请求方式**: GET
 - **请求参数**: 
   - `deviceType`: 设备类型（1:警告灯, 2:补光灯, 3:排气扇, 4:报警器, 5:紧急门）
@@ -201,6 +218,7 @@ http://localhost:8080
         {
             "id": 1,
             "userId": 1,
+            "deviceStatusId": 1,
             "deviceType": 1,
             "controlAction": true,
             "createTime": "2024-03-21T10:00:00"

@@ -6,4 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface EnvironmentMapper {
     Environment getCurrentEnvironment();
+    int insert(Environment environment);
 } 

@@ -4,4 +4,20 @@
     <select id="getCurrentEnvironment" resultType="com.guhai.smartbuilding.entity.Environment">
         SELECT * FROM environment ORDER BY id DESC LIMIT 1
     </select>
+    
+    <insert id="insert" parameterType="com.guhai.smartbuilding.entity.Environment">
+        INSERT INTO environment (
+            temperature, 
+            humidity, 
+            light, 
+#             co2,
+            create_time
+        ) VALUES (
+            #{temperature}, 
+            #{humidity}, 
+            #{light}, 
+#             {co2},
+            NOW()
+        )
+    </insert>
 </mapper> 

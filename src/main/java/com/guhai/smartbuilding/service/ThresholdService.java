@@ -17,4 +17,7 @@ public interface ThresholdService {
     
     // 获取用户的特定类型阈值修改记录
     List<ThresholdRecord> getThresholdRecordsByType(int userId, int thresholdType);
+    
+    // 处理阈值设置响应
+    void handleThresholdSetResponse(Thresholds thresholds, boolean success);
 } 
