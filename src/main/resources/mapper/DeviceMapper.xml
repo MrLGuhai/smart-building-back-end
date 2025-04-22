@@ -46,8 +46,22 @@
             device_type as deviceType,
             control_action as controlAction,
             create_time as createTime
-        FROM device_control_record 
+        FROM device_control_record
+        <where>
+            <if test="deviceType != null">
+                device_type = #{deviceType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="startTime != null and endTime != null ">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
         ORDER BY create_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
     </select>
 
     <!-- 根据设备类型获取控制记录 -->

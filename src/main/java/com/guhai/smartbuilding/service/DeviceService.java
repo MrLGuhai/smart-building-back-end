@@ -3,6 +3,7 @@ package com.guhai.smartbuilding.service;
 import com.guhai.smartbuilding.entity.Device;
 import com.guhai.smartbuilding.entity.DeviceControlRecord;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DeviceService {
@@ -35,4 +36,21 @@ public interface DeviceService {
      * @param device 设备状态
      */
     void handleDeviceAutoControl(Device device);
+
+    /**
+     * 获取设备控制记录
+     * @param limit 记录数量
+     * @param deviceType 设备类型
+     * @param userId 用户ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 控制记录列表
+     */
+    List<DeviceControlRecord> getControlRecords(
+            Integer limit,
+            Integer deviceType,
+            Integer userId,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    );
 } 

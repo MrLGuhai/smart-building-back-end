@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.EnvironmentMapper">
+    <resultMap id="EnvironmentRecordMap" type="com.guhai.smartbuilding.entity.EnvironmentRecord">
+        <id column="id" property="id"/>
+        <result column="temperature" property="temperature"/>
+        <result column="humidity" property="humidity"/>
+        <result column="light" property="light"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="getHistoryRecords" resultMap="EnvironmentRecordMap">
+        SELECT id, temperature, humidity, light, create_time
+        FROM environment
+        <where>
+            <if test="startTime != null and endTime != null">
+                create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
     <select id="getCurrentEnvironment" resultType="com.guhai.smartbuilding.entity.Environment">
         SELECT * FROM environment ORDER BY id DESC LIMIT 1
     </select>

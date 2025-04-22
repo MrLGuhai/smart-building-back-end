@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -254,5 +255,16 @@ public class DeviceServiceImpl implements DeviceService {
             record.setControlAction(device.getEmergencyDoor());
             deviceMapper.insertControlRecord(record);
         }
+    }
+
+    @Override
+    public List<DeviceControlRecord> getControlRecords(
+            Integer limit,
+            Integer deviceType,
+            Integer userId,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        return deviceMapper.getControlRecords(limit, deviceType, userId, startTime, endTime);
     }
 } 

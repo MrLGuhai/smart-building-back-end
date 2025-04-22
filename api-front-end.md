@@ -247,6 +247,90 @@
 }
 ```
 
+## 历史数据相关接口
+
+### 1. 获取历史环境数据
+- **接口URL**: `/environment/history`
+- **请求方法**: GET
+- **请求参数**: 
+  - `limit`: number (可选，默认200) - 获取的记录数量
+  - `startTime`: string (可选) - 开始时间，格式：yyyy-MM-dd HH:mm:ss
+  - `endTime`: string (可选) - 结束时间，格式：yyyy-MM-dd HH:mm:ss
+- **响应数据**:
+```json
+{
+  "code": 200,
+  "message": "获取成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "temperature": 25.5,
+        "humidity": 60,
+        "light": 800,
+        "createTime": "2024-03-21T10:00:00"
+      }
+    ]
+  }
+}
+```
+
+### 2. 获取历史控制记录
+- **接口URL**: `/device/control/records`
+- **请求方法**: GET
+- **请求参数**:
+  - `limit`: number (可选，默认100) - 获取的记录数量
+  - `deviceType`: number (可选) - 设备类型：1-警示灯，2-补光灯，3-排气扇，4-警报器，5-应急逃生门
+  - `userId`: number (可选) - 用户ID，用于查询特定用户的控制记录
+  - `startTime`: string (可选) - 开始时间，格式：yyyy-MM-dd HH:mm:ss
+  - `endTime`: string (可选) - 结束时间，格式：yyyy-MM-dd HH:mm:ss
+- **响应数据**:
+```json
+{
+  "code": 200,
+  "message": "获取成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "userId": 1,
+        "deviceStatusId": 1,
+        "deviceType": 1,
+        "controlAction": true,
+        "createTime": "2024-03-21T10:00:00"
+      }
+    ]
+  }
+}
+```
+
+### 3. 获取历史告警记录
+- **接口URL**: `/alarm/records`
+- **请求方法**: GET
+- **请求参数**:
+  - `limit`: number (可选，默认100) - 获取的记录数量
+  - `alarmType`: number (可选) - 告警类型：1-温度过高，2-温度过低，3-湿度过高，4-湿度过低，5-光照过强，6-光照过弱
+  - `startTime`: string (可选) - 开始时间，格式：yyyy-MM-dd HH:mm:ss
+  - `endTime`: string (可选) - 结束时间，格式：yyyy-MM-dd HH:mm:ss
+- **响应数据**:
+```json
+{
+  "code": 200,
+  "message": "获取成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "alarmType": 1,
+        "actualValue": 35,
+        "thresholdValue": 30,
+        "createTime": "2024-03-21T10:00:00"
+      }
+    ]
+  }
+}
+```
+
 ## 错误码说明
 
 | 错误码 | 说明 |
