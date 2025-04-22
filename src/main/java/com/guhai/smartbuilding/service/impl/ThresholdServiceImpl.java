@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -91,6 +92,7 @@ public class ThresholdServiceImpl implements ThresholdService {
                         record.setUserId(thresholds.getUserId());
                         record.setThresholdId(mergedThresholds.getId());
                         record.setThresholdType(ThresholdType.TEMPERATURE.getCode());
+                        record.setOldValue(currentThresholds.getTemperature());
                         record.setNewValue(thresholds.getTemperature());
                         thresholdRecordMapper.insert(record);
                     }
@@ -102,6 +104,7 @@ public class ThresholdServiceImpl implements ThresholdService {
                         record.setUserId(thresholds.getUserId());
                         record.setThresholdId(mergedThresholds.getId());
                         record.setThresholdType(ThresholdType.HUMIDITY.getCode());
+                        record.setOldValue(currentThresholds.getHumidity());
                         record.setNewValue(thresholds.getHumidity());
                         thresholdRecordMapper.insert(record);
                     }
@@ -113,6 +116,7 @@ public class ThresholdServiceImpl implements ThresholdService {
                         record.setUserId(thresholds.getUserId());
                         record.setThresholdId(mergedThresholds.getId());
                         record.setThresholdType(ThresholdType.LIGHT_UPPER.getCode());
+                        record.setOldValue(currentThresholds.getLightUpper());
                         record.setNewValue(thresholds.getLightUpper());
                         thresholdRecordMapper.insert(record);
                     }
@@ -124,6 +128,7 @@ public class ThresholdServiceImpl implements ThresholdService {
                         record.setUserId(thresholds.getUserId());
                         record.setThresholdId(mergedThresholds.getId());
                         record.setThresholdType(ThresholdType.LIGHT_LOWER.getCode());
+                        record.setOldValue(currentThresholds.getLightLower());
                         record.setNewValue(thresholds.getLightLower());
                         thresholdRecordMapper.insert(record);
                     }
@@ -173,5 +178,10 @@ public class ThresholdServiceImpl implements ThresholdService {
             // 如果设置失败,记录错误日志
             log.error("阈值设置失败: thresholds={}", thresholds);
         }
+    }
+
+    @Override
+    public List<ThresholdRecord> getThresholdRecords(Integer limit, Integer thresholdType, Integer userId, LocalDateTime startTime, LocalDateTime endTime) {
+        return thresholdRecordMapper.getThresholdRecords(limit, thresholdType, userId, startTime, endTime);
     }
 } 

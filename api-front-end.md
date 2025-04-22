@@ -275,7 +275,36 @@
 }
 ```
 
-### 2. 获取历史控制记录
+### 2. 获取历史阈值修改记录
+- **接口URL**: `/threshold/records`
+- **请求方法**: GET
+- **请求参数**:
+  - `limit`: number (可选，默认100) - 获取的记录数量
+  - `thresholdType`: number (可选) - 阈值类型：1-温度，2-湿度，3-光照上限，4-光照下限
+  - `userId`: number (可选) - 用户ID，用于查询特定用户的修改记录
+  - `startTime`: string (可选) - 开始时间，格式：yyyy-MM-dd HH:mm:ss
+  - `endTime`: string (可选) - 结束时间，格式：yyyy-MM-dd HH:mm:ss
+- **响应数据**:
+```json
+{
+  "code": 200,
+  "message": "获取成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "userId": 1,
+        "thresholdType": 1,
+        "oldValue": 30,
+        "newValue": 35,
+        "createTime": "2024-03-21T10:00:00"
+      }
+    ]
+  }
+}
+```
+
+### 3. 获取历史控制记录
 - **接口URL**: `/device/control/records`
 - **请求方法**: GET
 - **请求参数**:
@@ -304,7 +333,7 @@
 }
 ```
 
-### 3. 获取历史告警记录
+### 4. 获取历史告警记录
 - **接口URL**: `/alarm/records`
 - **请求方法**: GET
 - **请求参数**:

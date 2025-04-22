@@ -5,10 +5,12 @@ import com.guhai.smartbuilding.config.MqttConfig;
 import com.guhai.smartbuilding.entity.Device;
 import com.guhai.smartbuilding.entity.Environment;
 import com.guhai.smartbuilding.entity.Thresholds;
+import com.guhai.smartbuilding.entity.AlarmRecord;
 import com.guhai.smartbuilding.service.DeviceService;
 import com.guhai.smartbuilding.service.EnvironmentService;
 import com.guhai.smartbuilding.service.MqttService;
 import com.guhai.smartbuilding.service.ThresholdService;
+import com.guhai.smartbuilding.service.AlarmService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -44,8 +47,11 @@ public class MqttServiceImpl implements MqttService {
     
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     private MqttClient mqttClient;
+    
+    @Autowired
+    private AlarmService alarmService;
     
     // 存储commandId和对应的回调
     private final ConcurrentHashMap<String, CompletableFuture<Boolean>> commandCallbacks = new ConcurrentHashMap<>();
@@ -108,6 +114,7 @@ public class MqttServiceImpl implements MqttService {
             subscribe(mqttConfig.getTopics().getDeviceStatus(), mqttConfig.getQos());
             subscribe(mqttConfig.getTopics().getDeviceControlResponse(), mqttConfig.getQos());
             subscribe(mqttConfig.getTopics().getThresholdSetResponse(), mqttConfig.getQos());
+            subscribe(mqttConfig.getTopics().getAlarmRecord(), mqttConfig.getQos());
         } catch (MqttException e) {
             log.error("MQTT连接失败", e);
         }
@@ -181,6 +188,8 @@ public class MqttServiceImpl implements MqttService {
                 handleDeviceControlResponse(message);
             } else if (topic.equals(mqttConfig.getTopics().getThresholdSetResponse())) {
                 handleThresholdSetResponse(message);
+            } else if (topic.equals(mqttConfig.getTopics().getAlarmRecord())) {
+                handleAlarmRecord(message);
             } else {
                 log.warn("未知主题: {}", topic);
             }
@@ -246,7 +255,7 @@ public class MqttServiceImpl implements MqttService {
 
             // 更新环境数据
             environmentService.updateEnvironment(environment);
-            log.info("收到传感器数据: {}", data);
+            //log.info("收到传感器数据: {}", data);
         } catch (Exception e) {
             log.error("处理传感器数据失败", e);
         }
@@ -289,6 +298,7 @@ public class MqttServiceImpl implements MqttService {
             if (future != null) {
                 future.complete(success);
                 commandCallbacks.remove(commandId);
+                log.info("收到设备控制响应: {}", response);
             } else {
                 log.warn("收到未知commandId的设备控制响应: {}", commandId);
             }
@@ -307,12 +317,20 @@ public class MqttServiceImpl implements MqttService {
             if (future != null) {
                 future.complete(success);
                 commandCallbacks.remove(commandId);
+                log.info("收到阈值设置响应: {}", response);
             } else {
                 log.warn("收到未知commandId的阈值设置响应: {}", commandId);
             }
         } catch (Exception e) {
             log.error("处理阈值设置响应失败", e);
         }
+    }
+    
+    private void handleAlarmRecord(String payload) throws Exception {
+        AlarmRecord alarmRecord = objectMapper.readValue(payload, AlarmRecord.class);
+        alarmRecord.setCreateTime(LocalDateTime.now());
+        alarmService.handleAlarmRecord(alarmRecord);
+        log.info("收到报警记录: {}", alarmRecord);
     }
     
     @Override

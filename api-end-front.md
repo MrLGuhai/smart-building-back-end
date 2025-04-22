@@ -272,6 +272,106 @@ http://localhost:8080
 }
 ```
 
+## 告警记录接口
+
+### 1. 获取历史告警记录
+- **接口URL**: `/alarm/records`
+- **请求方式**: GET
+- **请求参数**:
+  - `limit`: 记录数量（可选，默认100）
+  - `alarmType`: 告警类型（可选，1:温度过高, 2:温度过低, 3:湿度过高, 4:湿度过低, 5:光照过强, 6:光照过弱）
+  - `startTime`: 开始时间（可选，格式：yyyy-MM-dd HH:mm:ss）
+  - `endTime`: 结束时间（可选，格式：yyyy-MM-dd HH:mm:ss）
+- **成功响应**:
+```json
+{
+    "code": 200,
+    "message": "获取成功",
+    "data": {
+        "records": [
+            {
+                "id": 1,
+                "alarmType": 1,
+                "actualValue": 35.0,
+                "thresholdValue": 30.0,
+                "createTime": "2024-03-21T10:00:00"
+            }
+        ]
+    }
+}
+```
+- **失败响应**:
+```json
+{
+    "code": 500,
+    "message": "获取告警记录失败",
+    "data": null
+}
+```
+
+## 阈值修改记录接口
+
+### 1. 获取历史阈值修改记录
+- **接口URL**: `/thresholds/records`
+- **请求方式**: GET
+- **请求参数**:
+  - `limit`: 记录数量（可选，默认100）
+  - `thresholdType`: 阈值类型（可选，1:温度, 2:湿度, 3:光照上限, 4:光照下限）
+  - `userId`: 用户ID（可选）
+  - `startTime`: 开始时间（可选，格式：yyyy-MM-dd HH:mm:ss）
+  - `endTime`: 结束时间（可选，格式：yyyy-MM-dd HH:mm:ss）
+- **成功响应**:
+```json
+{
+    "code": 200,
+    "message": "获取成功",
+    "data": {
+        "records": [
+            {
+                "id": 1,
+                "userId": 1,
+                "thresholdType": 1,
+                "oldValue": 30,
+                "newValue": 35,
+                "createTime": "2024-03-21T10:00:00"
+            }
+        ]
+    }
+}
+```
+- **失败响应**:
+```json
+{
+    "code": 500,
+    "message": "获取阈值修改记录失败",
+    "data": null
+}
+```
+
+### 2. 根据阈值类型获取修改记录
+- **接口URL**: `/thresholds/records/type`
+- **请求方式**: GET
+- **请求参数**:
+  - `userId`: 用户ID
+  - `thresholdType`: 阈值类型（1:温度, 2:湿度, 3:光照上限, 4:光照下限）
+- **成功响应**:
+```json
+{
+    "code": 200,
+    "message": "获取成功",
+    "data": [
+        {
+            "id": 1,
+            "userId": 1,
+            "thresholdType": 1,
+            "oldValue": 30,
+            "newValue": 35,
+            "createTime": "2024-03-21T10:00:00"
+        }
+    ]
+}
+```
+
 ## 阈值设置接口
 
 ### 1. 获取当前阈值设置

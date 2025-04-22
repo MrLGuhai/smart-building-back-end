@@ -1,7 +1,6 @@
 package com.guhai.smartbuilding.controller;
 
 import com.guhai.smartbuilding.entity.Environment;
-import com.guhai.smartbuilding.entity.EnvironmentRecord;
 import com.guhai.smartbuilding.service.EnvironmentService;
 import com.guhai.smartbuilding.common.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +32,7 @@ public class EnvironmentController {
             @RequestParam(required = false, defaultValue = "200") Integer limit,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        List<EnvironmentRecord> records = environmentService.getHistoryRecords(limit, startTime, endTime);
+        List<Environment> records = environmentService.getHistoryRecords(limit, startTime, endTime);
         if (records == null) {
             return ApiResponse.error(500, "获取历史环境数据失败");
         }

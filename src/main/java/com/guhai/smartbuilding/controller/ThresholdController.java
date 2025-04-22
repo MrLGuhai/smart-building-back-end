@@ -5,9 +5,12 @@ import com.guhai.smartbuilding.entity.ThresholdRecord;
 import com.guhai.smartbuilding.entity.Thresholds;
 import com.guhai.smartbuilding.service.ThresholdService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/thresholds")
@@ -30,9 +33,26 @@ public class ThresholdController {
     }
 
     @GetMapping("/records")
-    public ApiResponse getThresholdRecords(@RequestParam int userId) {
-        List<ThresholdRecord> records = thresholdService.getThresholdRecords(userId);
-        return ApiResponse.success("获取成功", records);
+    public ApiResponse getThresholdRecords(
+            @RequestParam(required = false, defaultValue = "100") Integer limit,
+            @RequestParam(required = false) Integer thresholdType,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime
+    ) {
+        try {
+            List<ThresholdRecord> records = thresholdService.getThresholdRecords(
+                limit,
+                thresholdType,
+                userId,
+                startTime ,
+                endTime
+            );
+            
+            return ApiResponse.success("获取成功", Map.of("records", records));
+        } catch (Exception e) {
+            return ApiResponse.error(500, "获取阈值修改记录失败：" + e.getMessage());
+        }
     }
 
     @GetMapping("/records/type")

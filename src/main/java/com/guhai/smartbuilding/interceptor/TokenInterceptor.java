@@ -32,7 +32,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         token = token.substring(7);
         try {
             JwtUtils.parseJWT(token);
-            log.info("令牌合法，放行");
+            //log.info("令牌合法，放行");
             return true;
         } catch (Exception e) {
             log.info("令牌非法，响应401状态码");

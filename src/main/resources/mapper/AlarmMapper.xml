@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guhai.smartbuilding.mapper.AlarmMapper">
+    <!-- 插入告警记录 -->
+    <insert id="insertAlarmRecord" parameterType="com.guhai.smartbuilding.entity.AlarmRecord">
+        INSERT INTO alarm_record (
+            alarm_type,
+            actual_value,
+            threshold_value,
+            create_time
+        ) VALUES (
+            #{alarmRecord.alarmType},
+            #{alarmRecord.actualValue},
+            #{alarmRecord.thresholdValue},
+            #{alarmRecord.createTime}
+        )
+    </insert>
+
+    <select id="getAlarmRecords" resultType="com.guhai.smartbuilding.entity.AlarmRecord">
+        SELECT 
+            id,
+            alarm_type as alarmType,
+            actual_value as actualValue,
+            threshold_value as thresholdValue,
+            create_time as createTime
+        FROM alarm_record
+        <where>
+            <if test="alarmType != null">
+                AND alarm_type = #{alarmType}
+            </if>
+            <if test="startTime != null and endTime != null ">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+</mapper> 

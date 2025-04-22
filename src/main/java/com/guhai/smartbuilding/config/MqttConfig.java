@@ -31,5 +31,6 @@ public class MqttConfig {
         private String deviceControlResponse;
         private String thresholdSet;
         private String thresholdSetResponse;
+        private String alarmRecord;
     }
 } 

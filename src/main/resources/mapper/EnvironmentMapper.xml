@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.EnvironmentMapper">
-    <resultMap id="EnvironmentRecordMap" type="com.guhai.smartbuilding.entity.EnvironmentRecord">
+    <resultMap id="EnvironmentRecordMap" type="com.guhai.smartbuilding.entity.Environment">
         <id column="id" property="id"/>
         <result column="temperature" property="temperature"/>
         <result column="humidity" property="humidity"/>

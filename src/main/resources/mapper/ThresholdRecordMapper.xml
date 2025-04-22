@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.guhai.smartbuilding.mapper.ThresholdRecordMapper">
     <insert id="insert" parameterType="com.guhai.smartbuilding.entity.ThresholdRecord">
-        INSERT INTO threshold_records (user_id, threshold_id, threshold_type, new_value)
-        VALUES (#{userId}, #{thresholdId}, #{thresholdType}, #{newValue})
+        INSERT INTO threshold_records (user_id, threshold_id, threshold_type, threshold_records.old_value,new_value)
+        VALUES (#{userId}, #{thresholdId}, #{thresholdType}, #{oldValue},#{newValue})
     </insert>
 
     <select id="selectByUserId" resultType="com.guhai.smartbuilding.entity.ThresholdRecord">
@@ -12,6 +12,7 @@
             user_id as userId,
             threshold_id as thresholdId,
             threshold_type as thresholdType,
+            old_value as oldValue,
             new_value as newValue,
             create_time as createTime
         FROM threshold_records
@@ -25,10 +26,38 @@
             user_id as userId,
             threshold_id as thresholdId,
             threshold_type as thresholdType,
+            old_value as oldValue,
             new_value as newValue,
             create_time as createTime
         FROM threshold_records
         WHERE user_id = #{userId} AND threshold_type = #{thresholdType}
         ORDER BY create_time DESC
     </select>
+
+    <select id="getThresholdRecords" resultType="com.guhai.smartbuilding.entity.ThresholdRecord">
+        SELECT
+        id,
+        user_id as userId,
+        threshold_type as thresholdType,
+        old_value as oldValue,
+        new_value as newValue,
+        create_time as createTime
+        FROM threshold_records
+        <where>
+            <if test="thresholdType != null">
+                AND threshold_type = #{thresholdType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
 </mapper> 

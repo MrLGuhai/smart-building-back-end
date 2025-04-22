@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS threshold_records (
     user_id INT NOT NULL COMMENT '操作用户ID',
     threshold_id INT NOT NULL COMMENT '关联的阈值设置ID',
     threshold_type INT NOT NULL COMMENT '1:温度 2:湿度 3:光照上限 4:光照下限',
+    old_value INT NOT NULL COMMENT '原始阈值',
     new_value INT NOT NULL COMMENT '新的阈值',
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -65,7 +66,7 @@ CREATE TABLE IF NOT EXISTS threshold_records (
 -- 告警记录表
 CREATE TABLE IF NOT EXISTS alarm_record (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    alarm_type INT NOT NULL COMMENT '告警类型：1-温度过高，2-温度过低，3-湿度过高，4-湿度过低，5-光照过强，6-光照过弱',
+    alarm_type INT NOT NULL COMMENT '告警类型：1-温度过高，2-温度回归正常，3-湿度过高，4-湿度回归正常，5-光照过强，6-光照过弱',
     actual_value INT NOT NULL COMMENT '实际值',
     threshold_value INT NOT NULL COMMENT '阈值',
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP

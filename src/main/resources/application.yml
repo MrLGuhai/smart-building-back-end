@@ -65,3 +65,4 @@ mqtt:
     device-control-response: device/control/response
     threshold-set: threshold/set
     threshold-set-response: threshold/set/response
+    alarm-record: alarm/record

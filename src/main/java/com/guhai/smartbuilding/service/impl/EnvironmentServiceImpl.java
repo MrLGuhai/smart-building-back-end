@@ -1,7 +1,6 @@
 package com.guhai.smartbuilding.service.impl;
 
 import com.guhai.smartbuilding.entity.Environment;
-import com.guhai.smartbuilding.entity.EnvironmentRecord;
 import com.guhai.smartbuilding.mapper.EnvironmentMapper;
 import com.guhai.smartbuilding.service.EnvironmentService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     }
 
     @Override
-    public List<EnvironmentRecord> getHistoryRecords(Integer limit, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<Environment> getHistoryRecords(Integer limit, LocalDateTime startTime, LocalDateTime endTime) {
         try {
             return environmentMapper.getHistoryRecords(limit, startTime, endTime);
         } catch (Exception e) {

@@ -1,7 +1,6 @@
 package com.guhai.smartbuilding.mapper;
 
 import com.guhai.smartbuilding.entity.Environment;
-import com.guhai.smartbuilding.entity.EnvironmentRecord;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ public interface EnvironmentMapper {
      * @param endTime 结束时间
      * @return 环境数据记录列表
      */
-    List<EnvironmentRecord> getHistoryRecords(
+    List<Environment> getHistoryRecords(
         @Param("limit") Integer limit,
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime

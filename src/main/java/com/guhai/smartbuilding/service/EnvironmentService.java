@@ -1,7 +1,6 @@
 package com.guhai.smartbuilding.service;
 
 import com.guhai.smartbuilding.entity.Environment;
-import com.guhai.smartbuilding.entity.EnvironmentRecord;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,5 +16,5 @@ public interface EnvironmentService {
      * @param endTime 结束时间
      * @return 环境数据记录列表
      */
-    List<EnvironmentRecord> getHistoryRecords(Integer limit, LocalDateTime startTime, LocalDateTime endTime);
+    List<Environment> getHistoryRecords(Integer limit, LocalDateTime startTime, LocalDateTime endTime);
 } 
