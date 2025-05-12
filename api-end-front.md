@@ -115,7 +115,7 @@ http://localhost:8080
         "temperature": 25.5,
         "humidity": 60,
         "light": 800,
-        "co2": 400,
+        "smoke": 230,
         "createTime": "2024-03-21T10:00:00"
     }
 }
@@ -140,6 +140,7 @@ http://localhost:8080
                 "temperature": 25.5,
                 "humidity": 60,
                 "light": 800,
+                "smoke": 230,
                 "createTime": "2024-03-21T10:00:00"
             }
         ]
@@ -391,8 +392,6 @@ http://localhost:8080
         "humidityMax": 70,
         "lightMin": 300,
         "lightMax": 1000,
-        "co2Min": 350,
-        "co2Max": 1000,
         "createTime": "2024-03-21T10:00:00"
     }
 }
@@ -410,8 +409,6 @@ http://localhost:8080
     "humidityMax": 70,       // 湿度最大值
     "lightMin": 300,         // 光照最小值
     "lightMax": 1000,        // 光照最大值
-    "co2Min": 350,           // CO2最小值
-    "co2Max": 1000           // CO2最大值
 }
 ```
 - **成功响应**:

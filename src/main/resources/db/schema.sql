@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS environment (
     temperature INT NOT NULL,
     humidity INT NOT NULL,
     light INT NOT NULL,
+    smoke  INT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

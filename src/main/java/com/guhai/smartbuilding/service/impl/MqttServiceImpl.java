@@ -251,7 +251,7 @@ public class MqttServiceImpl implements MqttService {
             environment.setTemperature((Integer) data.get("temperature"));
             environment.setHumidity((Integer) data.get("humidity"));
             environment.setLight((Integer) data.get("light"));
-            //environment.setCo2((Integer) data.get("co2"));
+            environment.setSmoke((Integer) data.get("smoke"));
 
             // 更新环境数据
             environmentService.updateEnvironment(environment);

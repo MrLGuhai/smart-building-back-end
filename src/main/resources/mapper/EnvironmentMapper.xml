@@ -6,11 +6,12 @@
         <result column="temperature" property="temperature"/>
         <result column="humidity" property="humidity"/>
         <result column="light" property="light"/>
+        <result column="smoke" property="smoke"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
     <select id="getHistoryRecords" resultMap="EnvironmentRecordMap">
-        SELECT id, temperature, humidity, light, create_time
+        SELECT id, temperature, humidity, light, smoke, create_time
         FROM environment
         <where>
             <if test="startTime != null and endTime != null">
@@ -32,13 +33,13 @@
             temperature, 
             humidity, 
             light, 
-#             co2,
+            smoke,
             create_time
         ) VALUES (
             #{temperature}, 
             #{humidity}, 
             #{light}, 
-#             {co2},
+            #{smoke},
             NOW()
         )
     </insert>
