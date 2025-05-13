@@ -1,5 +1,6 @@
 package com.guhai.smartbuilding.service.impl;
 
+import cn.hutool.crypto.digest.BCrypt;
 import com.guhai.smartbuilding.entity.LoginResponse;
 import com.guhai.smartbuilding.entity.User;
 import com.guhai.smartbuilding.mapper.UserMapper;
@@ -20,8 +21,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(String username, String password) {
-        User user = userMapper.selectByUsernameAndPassword(username, password);
-        if (user != null) {
+        User user = userMapper.selectByUsername(username);
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             log.info("登录成功，用户信息: {}", user);
             // 生成JWT令牌
             Map<String, Object> claims = new HashMap<>();
@@ -48,7 +49,8 @@ public class AuthServiceImpl implements AuthService {
         // 创建新用户
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password);
+        // 使用BCrypt加密密码
+        user.setPassword(BCrypt.hashpw(password));
         return userMapper.insert(user) > 0;
     }
 } 

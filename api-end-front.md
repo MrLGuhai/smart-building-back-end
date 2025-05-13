@@ -23,16 +23,35 @@ http://localhost:8080
 - 403: 权限不足
 - 500: 服务器内部错误
 
+### RSA加密说明
+1. 前端在调用登录/注册接口前，需要先调用`/auth/public-key`获取RSA公钥
+2. 使用获取到的公钥对用户名和密码进行加密
+3. 将加密后的数据发送到服务器
+4. 服务器使用私钥解密后进行处理
+
 ## 认证相关接口
 
-### 1. 用户登录
+### 1. 获取RSA公钥
+- **接口URL**: `/auth/public-key`
+- **请求方式**: GET
+- **请求参数**: 无
+- **成功响应**:
+```json
+{
+    "code": 200,
+    "message": "获取成功",
+    "data": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA..."  // RSA公钥
+}
+```
+
+### 2. 用户登录
 - **接口URL**: `/auth/login`
 - **请求方式**: POST
 - **请求参数**:
 ```json
 {
-    "username": "string",  // 用户名
-    "password": "string"   // 密码
+    "username": "string",  // RSA加密后的用户名
+    "password": "string"   // RSA加密后的密码
 }
 ```
 - **成功响应**:
@@ -56,14 +75,14 @@ http://localhost:8080
 }
 ```
 
-### 2. 用户注册
+### 3. 用户注册
 - **接口URL**: `/auth/register`
 - **请求方式**: POST
 - **请求参数**:
 ```json
 {
-    "username": "string",  // 用户名
-    "password": "string"   // 密码
+    "username": "string",  // RSA加密后的用户名
+    "password": "string"   // RSA加密后的密码
 }
 ```
 - **成功响应**:
@@ -71,10 +90,7 @@ http://localhost:8080
 {
     "code": 200,
     "message": "注册成功",
-    "data": {
-        "id": 1,
-        "username": "string"
-    }
+    "data": null
 }
 ```
 - **失败响应**:
@@ -86,7 +102,7 @@ http://localhost:8080
 }
 ```
 
-### 3. 用户登出
+### 4. 用户登出
 - **接口URL**: `/auth/logout`
 - **请求方式**: POST
 - **请求参数**: 无

@@ -14,6 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
-                .excludePathPatterns("/auth/login", "/auth/register");
+                .excludePathPatterns("/auth/login", "/auth/register" , "/auth/public-key");
     }
 }

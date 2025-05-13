@@ -4,6 +4,7 @@ import com.guhai.smartbuilding.common.ApiResponse;
 import com.guhai.smartbuilding.entity.LoginResponse;
 import com.guhai.smartbuilding.entity.User;
 import com.guhai.smartbuilding.service.AuthService;
+import com.guhai.smartbuilding.util.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +14,22 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @GetMapping("/public-key")
+    public ApiResponse getPublicKey() {
+        return ApiResponse.success("获取成功", RsaUtils.getPublicKey());
+    }
+
     @PostMapping("/login")
     public ApiResponse login(@RequestBody User user) {
-        LoginResponse loginResponse = authService.login(user.getUsername(), user.getPassword());
+        // 解密用户名和密码
+        String username = RsaUtils.decrypt(user.getUsername());
+        String password = RsaUtils.decrypt(user.getPassword());
+        
+        if (username == null || password == null) {
+            return ApiResponse.error(400, "解密失败");
+        }
+        
+        LoginResponse loginResponse = authService.login(username, password);
         if (loginResponse != null) {
             return ApiResponse.success("登录成功", loginResponse);
         }
@@ -24,8 +38,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse register(@RequestBody User user) {
-        if (authService.register(user.getUsername(), user.getPassword())) {
-            return ApiResponse.success("注册成功", user);
+        // 解密用户名和密码
+        String username = RsaUtils.decrypt(user.getUsername());
+        String password = RsaUtils.decrypt(user.getPassword());
+        
+        if (username == null || password == null) {
+            return ApiResponse.error(400, "解密失败");
+        }
+        
+        if (authService.register(username, password)) {
+            return ApiResponse.success("注册成功", null);
         }
         return ApiResponse.error(400, "用户名已存在");
     }
