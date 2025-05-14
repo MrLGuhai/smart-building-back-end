@@ -1,9 +1,12 @@
 package com.guhai.smartbuilding.controller;
 
 import com.guhai.smartbuilding.common.ApiResponse;
+import com.guhai.smartbuilding.entity.ThresholdAnalysis;
 import com.guhai.smartbuilding.entity.ThresholdRecord;
 import com.guhai.smartbuilding.entity.Thresholds;
+import com.guhai.smartbuilding.service.ThresholdAnalysisService;
 import com.guhai.smartbuilding.service.ThresholdService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +15,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/thresholds")
 public class ThresholdController {
     @Autowired
     private ThresholdService thresholdService;
+
+    @Autowired
+    private ThresholdAnalysisService thresholdAnalysisService;
 
     @GetMapping("/current")
     public ApiResponse getCurrentThresholds() {
@@ -60,4 +67,18 @@ public class ThresholdController {
         List<ThresholdRecord> records = thresholdService.getThresholdRecordsByType(userId, thresholdType);
         return ApiResponse.success("获取成功", records);
     }
+
+    //@GetMapping("/analysis")
+    //public ApiResponse analyzeThresholds(
+    //        @RequestParam(required = false) Integer days,
+    //        @RequestParam(required = false) Integer thresholdType) {
+    //    try {
+    //        List<ThresholdAnalysis> analysisResults = thresholdAnalysisService.analyzeThresholds(days, thresholdType);
+    //        return ApiResponse.success("分析成功", analysisResults);
+    //    } catch (Exception e) {
+    //        log.error("阈值分析失败", e);
+    //        return ApiResponse.error(500, "阈值分析失败：" + e.getMessage());
+    //    }
+    //}
+
 } 
