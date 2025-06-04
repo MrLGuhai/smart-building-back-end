@@ -22,4 +22,10 @@ public interface AlarmService {
      * @return 告警记录列表
      */
     List<AlarmRecord> getAlarmRecords(Integer limit, Integer alarmType, LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * 获取并清除未处理的告警记录
+     * @return 未处理的告警记录列表
+     */
+    List<AlarmRecord> getAndClearUnprocessedAlarms();
 } 

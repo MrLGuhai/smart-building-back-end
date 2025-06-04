@@ -36,7 +36,7 @@ public class AlarmController {
             List<AlarmRecord> records = alarmService.getAlarmRecords(
                 limit,
                 alarmType,
-                startTime ,
+                startTime,
                 endTime
             );
             
@@ -45,6 +45,20 @@ public class AlarmController {
         } catch (Exception e) {
             // 返回错误响应
             return ApiResponse.error(500, "获取告警记录失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取未处理的告警记录
+     * @return 未处理的告警记录列表
+     */
+    @GetMapping("/unprocessed")
+    public ApiResponse getUnprocessedAlarms() {
+        try {
+            List<AlarmRecord> records = alarmService.getAndClearUnprocessedAlarms();
+            return ApiResponse.success("获取成功", Map.of("records", records));
+        } catch (Exception e) {
+            return ApiResponse.error(500, "获取未处理告警记录失败：" + e.getMessage());
         }
     }
 } 
